@@ -4,17 +4,15 @@ using UnityEngine.SceneManagement;
 
 public class ChangeScene : MonoBehaviour, IPointerClickHandler {
     public string sceneName;
-    // Start is called before the first frame update
-    void Start() {
-        
-    }
+    void Start() {}
 
-    // Update is called once per frame
-    void Update() {
-        
-    }
+    void Update() {}
 
     public void OnPointerClick(PointerEventData eventData) {
+        ChangeToScene();
+    }
+
+    public void ChangeToScene() {
         SceneManager.LoadScene(sceneName);
     }
 }
