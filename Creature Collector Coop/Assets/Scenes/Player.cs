@@ -1,18 +1,24 @@
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor.Build.Player;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
     private float speed = 5f;
-    private Creature[] creatures;
-    private int credits;
+    private List<Creature> creatures = new List<Creature>(6);
+    private PlayerUIManager playerUI;
+
+    //private int credits;
     //private Item[] bag;
 
     void Start() {
-        credits = 0;
-        creatures = new Creature[6];
+        playerUI = GameObject.FindGameObjectWithTag("PlayerUI").GetComponent<PlayerUIManager>();
+        TestInitializeCreatures();
     }
 
     void Update() {
         Move();
+        PlayerInterface();
     }
 
     //void Awake() { DontDestroyOnLoad(gameObject); }
@@ -43,4 +49,22 @@ public class Player : MonoBehaviour {
             renderer.enabled = true;
         }
     }
+
+    public  void TestInitializeCreatures() {
+        // Example initialization, replace with your actual logic
+        for (int i = 0; i < 6; i++) {
+            creatures.Add(new Creature("Creature" + (i + 1), i+1, 100+(10*i), 10*3-i, 10, false));
+            Debug.Log(creatures.Count);
+        }
+    }
+
+    void PlayerInterface() {
+        if (playerUI != null) {
+            if (Input.GetKeyDown(KeyCode.Q)) {
+                playerUI.gameObject.SetActive(!playerUI.gameObject.activeSelf);
+            }
+        } 
+    }
+
+    public List<Creature> GetCreatures() { return creatures; }
 }

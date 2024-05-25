@@ -6,16 +6,15 @@ public class SceneTransition : MonoBehaviour {
     public string sceneName;
     public GameObject playerPrefab;
 
-     void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         Debug.Log("Scene Loaded: " + scene.name);
         Debug.Log("Instantiating player...");
         GameObject newPlayer = Instantiate(playerPrefab);
         Debug.Log("Player instantiated: " + newPlayer.name);
 
         // Optionally, set its position, rotation, and scale as needed
-        newPlayer.transform.position = new Vector3(0, 0, 0); // Example position
-        newPlayer.transform.rotation = Quaternion.identity; // Example rotation
-        newPlayer.transform.localScale = Vector3.one; // Example scale
+        newPlayer.transform.position = playerPrefab.transform.position; // Example position
+        newPlayer.transform.rotation = playerPrefab.transform.rotation;  // Example rotation
 
         // Optional: Disable the renderer if needed
         DisablePlayerInCombat(newPlayer, scene);
@@ -33,7 +32,6 @@ public class SceneTransition : MonoBehaviour {
 
     public void TransitionToScene() {
         SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
-        Debug.Log("TEST");
     }
 
     void DisablePlayerInCombat(GameObject newPlayer, Scene scene) {
