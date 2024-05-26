@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public class Creature{
-    public string name;
+public class Creature : MonoBehaviour {
     public int level;
     public bool sex;
     public int maxHealth;
@@ -12,7 +11,7 @@ public class Creature{
     //private Move move1;
 
     public Creature(string name, int level, int maxHealth, int attack, int defense, bool sex) {
-        this.name = name;
+        gameObject.name = name;
         this.level = level;
         this.maxHealth = maxHealth;
         currentHealth = maxHealth;

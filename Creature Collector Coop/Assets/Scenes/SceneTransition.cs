@@ -4,7 +4,8 @@ using UnityEngine.SceneManagement;
 
 public class SceneTransition : MonoBehaviour {
     public string sceneName;
-    public GameObject playerPrefab;
+    public static GameObject playerPrefab;
+    public GameObject spawnPosition;
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
         Debug.Log("Scene Loaded: " + scene.name);

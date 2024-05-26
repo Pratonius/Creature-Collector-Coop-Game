@@ -1,34 +1,36 @@
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class PlayerUIManager : MonoBehaviour {
+public class PlayerUIManager : MonoBehaviour, IPointerClickHandler {
     private Player player;
-    private List<Text> names = new List<Text>(6);
+    private PlayerUISidePanel sidePanel;
 
     // Start is called before the first frame update
     void Start() {
         player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        PopulateNamesList();
-        SetSidePanel();
+        sidePanel = GameObject.FindGameObjectWithTag("PlayerUISidePanel").GetComponent<PlayerUISidePanel>();
+        sidePanel.gameObject.SetActive(!sidePanel.gameObject.activeSelf);
     }
 
-    void PopulateNamesList() {
-        foreach (Transform child in transform) {
-            Text textComponent = child.GetComponent<Text>();
-            if (textComponent != null) {
-                names.Add(textComponent);
+    void Update() {
+        UpdateButtonText();
+    }
+
+    public void OnPointerClick(PointerEventData eventData) {
+        sidePanel.gameObject.SetActive(!sidePanel.gameObject.activeSelf);
+        UpdateButtonText();
+    }
+    
+    private void UpdateButtonText() {
+        GameObject child = transform.GetChild(0).gameObject;
+        if (child != null) {
+            if (sidePanel.gameObject.activeSelf) {
+                child.GetComponent<Text>().text = "<<";
+            } else {
+                child.GetComponent<Text>().text = ">>";
+            
             }
-            Debug.Log("TEXT ADDED, SUM OF " + names.Count);
-        }
-    }
-
-    void SetSidePanel() {
-        List<Creature> playerCreatures = player.GetCreatures();
-        for (int i = 0; i < playerCreatures.Count; i++) {
-            Debug.Log("Creature: " + playerCreatures[i].name);
-            names[i].text = $"{i+1}: {playerCreatures[i].name}\nLVL: {playerCreatures[i].level}\nHP: {playerCreatures[1].currentHealth}/{playerCreatures[1].maxHealth}";
         }
     }
 }

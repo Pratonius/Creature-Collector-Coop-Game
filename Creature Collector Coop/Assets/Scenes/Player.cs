@@ -1,24 +1,30 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
-using UnityEditor.Build.Player;
 using UnityEngine;
 
 public class Player : MonoBehaviour {
     private float speed = 5f;
     private List<Creature> creatures = new List<Creature>(6);
-    private PlayerUIManager playerUI;
+    private PlayerUISidePanel playerUISidePanel;
+    private GameObject creaturePrefab;
 
     //private int credits;
     //private Item[] bag;
 
     void Start() {
-        playerUI = GameObject.FindGameObjectWithTag("PlayerUI").GetComponent<PlayerUIManager>();
-        TestInitializeCreatures();
+        playerUISidePanel = GameObject.FindGameObjectWithTag("PlayerUISidePanel").GetComponent<PlayerUISidePanel>();
+        creaturePrefab = Resources.Load<GameObject>("CreaturePrefab");
+        
+        if (creaturePrefab == null) {
+            Debug.LogError("Failed to find CreaturePrefab in the scene.");
+            return;
+        }
+        InitializeCreatures();
     }
 
     void Update() {
         Move();
         PlayerInterface();
+        TestCreatureHandler();
     }
 
     //void Awake() { DontDestroyOnLoad(gameObject); }
@@ -34,7 +40,6 @@ public class Player : MonoBehaviour {
     }
     
     void OnTriggerEnter2D(Collider2D other) {
-        // Check what the player has triggered
         if (other.gameObject.CompareTag("Grass")) {
             Grass grass = other.gameObject.GetComponent<Grass>();
             if (grass != null) {
@@ -50,20 +55,79 @@ public class Player : MonoBehaviour {
         }
     }
 
-    public  void TestInitializeCreatures() {
+    public  void InitializeCreatures() {
         // Example initialization, replace with your actual logic
-        for (int i = 0; i < 6; i++) {
-            creatures.Add(new Creature("Creature" + (i + 1), i+1, 100+(10*i), 10*3-i, 10, false));
-            Debug.Log(creatures.Count);
+        foreach (Transform child in transform) {
+            Creature creature = child.GetComponent<Creature>();
+            if (creature != null) {
+                if (!creatures.Contains(creature)) { 
+                    creatures.Add(creature);
+                }
+            }
         }
     }
 
     void PlayerInterface() {
-        if (playerUI != null) {
+        if (playerUISidePanel != null) {
             if (Input.GetKeyDown(KeyCode.Q)) {
-                playerUI.gameObject.SetActive(!playerUI.gameObject.activeSelf);
+                playerUISidePanel.gameObject.SetActive(!playerUISidePanel.gameObject.activeSelf);
             }
         } 
+    }
+
+
+    //NOT TESTED
+    //NEED TO ADD CREATURE AND GameObject
+    void AddCreature(Creature creature) {
+        if (creatures.Count >= 6) {
+            GameObject childObject = Instantiate(creaturePrefab);
+            childObject.transform.SetParent(transform);
+        }
+    }
+
+    void AddCreature() {
+        if (creatures.Count < 6) {
+            GameObject childObject = Instantiate(creaturePrefab, transform);
+            Creature creatureComponent = childObject.GetComponent<Creature>();
+
+            if (creatureComponent != null) {
+                creatures.Add(creatureComponent);  // Add the creature to the list
+            }
+            else {
+                Debug.LogError("The instantiated object does not have a Creature component.");
+            }
+        } else {
+            Debug.Log("Maximum number of creatures reached.");
+        }
+    }
+
+    void RemoveCreature() {
+        if (creatures.Count > 1) {
+            Creature creatureToRemove = creatures[0];
+            string creatureNameToDelete = creatures[0].name;
+            GameObject creatureToDelete = transform.Find(creatureNameToDelete).gameObject;
+            creatures.RemoveAt(0);
+
+            // Destroy the GameObject
+            if (creatureToDelete != null) {
+                Destroy(creatureToDelete);
+                creatures.Remove(creatureToRemove);
+            } else {
+                Debug.LogError("Creature GameObject reference is null.");
+            }
+        } else {
+            Debug.Log("Can't have 0 Creatures in party.");
+        }
+    }
+
+    void TestCreatureHandler() {
+        if (Input.GetKeyDown(KeyCode.E)) {
+            //AddCreature(new Creature("TEST", 30, 90, 30, 30, false));
+            AddCreature();
+        }
+        if (Input.GetKeyDown(KeyCode.R)) {
+            RemoveCreature();
+        }
     }
 
     public List<Creature> GetCreatures() { return creatures; }
