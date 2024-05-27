@@ -1,9 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class Player : MonoBehaviour {
     private float speed = 5f;
-    private List<Creature> creatures = new List<Creature>(6);
+    public List<Creature> creatures = new List<Creature>();
     private PlayerUISidePanel playerUISidePanel;
     private GameObject creaturePrefab;
 
@@ -79,7 +80,7 @@ public class Player : MonoBehaviour {
     //NOT TESTED
     //NEED TO ADD CREATURE AND GameObject
     void AddCreature(Creature creature) {
-        if (creatures.Count >= 6) {
+        if (creatures.Count < 6) {
             GameObject childObject = Instantiate(creaturePrefab);
             childObject.transform.SetParent(transform);
         }
@@ -102,16 +103,32 @@ public class Player : MonoBehaviour {
     }
 
     void RemoveCreature() {
-        if (creatures.Count > 1) {
+        Debug.Log("Before Creatures: " + creatures.Count);
+        int amountOfObjects = 0;
+        List<GameObject> creatureObjects = new List<GameObject>();
+        foreach (Transform child in transform) {
+            if (child.GetComponent<Creature>()) {
+                creatureObjects.Add(child.gameObject);
+                amountOfObjects++;
+            }
+        }
+
+        if (creatures.Count > 1 && creatureObjects.Count > 1) {
             Creature creatureToRemove = creatures[0];
-            string creatureNameToDelete = creatures[0].name;
+            string creatureNameToDelete = creatureToRemove.name;
             GameObject creatureToDelete = transform.Find(creatureNameToDelete).gameObject;
-            creatures.RemoveAt(0);
 
             // Destroy the GameObject
-            if (creatureToDelete != null) {
-                Destroy(creatureToDelete);
-                creatures.Remove(creatureToRemove);
+            if (creatureToDelete != null && creatureToRemove != null) {
+                Debug.Log("Object: " + amountOfObjects);
+                Debug.Log("Creatures: " + creatures.Count);
+                bool removed = creatures.Remove(creatureToRemove);
+                if (removed) {
+                    Destroy(creatureToDelete); // Destroy the GameObject
+                    AdjustCreatureIndices(); // Adjust the indices of remaining creatures
+                } else {
+                    Debug.LogError("Creature was not found in the list.");
+                }
             } else {
                 Debug.LogError("Creature GameObject reference is null.");
             }
@@ -129,6 +146,15 @@ public class Player : MonoBehaviour {
             RemoveCreature();
         }
     }
+
+    void AdjustCreatureIndices() {
+    for (int i = 1; i < creatures.Count; i++) {
+        if (creatures[i] != null && creatures[i-1] == null) {
+            creatures[i-1] = creatures[i];
+            creatures.RemoveAt(i);
+        }
+    }
+}
 
     public List<Creature> GetCreatures() { return creatures; }
 }
