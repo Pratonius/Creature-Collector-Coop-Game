@@ -1,10 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class Player : MonoBehaviour {
     private float speed = 5f;
-    public List<Creature> creatures = new List<Creature>();
+    public List<Creature> creatures = new();
     private PlayerUISidePanel playerUISidePanel;
     private GameObject creaturePrefab;
 
@@ -27,8 +26,6 @@ public class Player : MonoBehaviour {
         PlayerInterface();
         TestCreatureHandler();
     }
-
-    //void Awake() { DontDestroyOnLoad(gameObject); }
 
     void Move() {
         if (enabled) {
@@ -56,8 +53,7 @@ public class Player : MonoBehaviour {
         }
     }
 
-    public  void InitializeCreatures() {
-        // Example initialization, replace with your actual logic
+    public void InitializeCreatures() {
         foreach (Transform child in transform) {
             Creature creature = child.GetComponent<Creature>();
             if (creature != null) {
@@ -76,9 +72,6 @@ public class Player : MonoBehaviour {
         } 
     }
 
-
-    //NOT TESTED
-    //NEED TO ADD CREATURE AND GameObject
     void AddCreature(Creature creature) {
         if (creatures.Count < 6) {
             GameObject childObject = Instantiate(creaturePrefab);
@@ -89,12 +82,13 @@ public class Player : MonoBehaviour {
     void AddCreature() {
         if (creatures.Count < 6) {
             GameObject childObject = Instantiate(creaturePrefab, transform);
-            Creature creatureComponent = childObject.GetComponent<Creature>();
 
-            if (creatureComponent != null) {
-                creatures.Add(creatureComponent);  // Add the creature to the list
-            }
-            else {
+            if (childObject != null) {
+                Creature creature = childObject.GetComponent<Creature>();
+                CleanUpCreaturesList();
+                creature.name += creatures.Count+1;
+                creatures.Add(childObject.GetComponent<Creature>());  // Add the creature to the list
+            } else {
                 Debug.LogError("The instantiated object does not have a Creature component.");
             }
         } else {
@@ -103,29 +97,15 @@ public class Player : MonoBehaviour {
     }
 
     void RemoveCreature() {
-        Debug.Log("Before Creatures: " + creatures.Count);
-        int amountOfObjects = 0;
-        List<GameObject> creatureObjects = new List<GameObject>();
-        foreach (Transform child in transform) {
-            if (child.GetComponent<Creature>()) {
-                creatureObjects.Add(child.gameObject);
-                amountOfObjects++;
-            }
-        }
-
-        if (creatures.Count > 1 && creatureObjects.Count > 1) {
+        if (creatures.Count > 1) {
             Creature creatureToRemove = creatures[0];
             string creatureNameToDelete = creatureToRemove.name;
             GameObject creatureToDelete = transform.Find(creatureNameToDelete).gameObject;
-
-            // Destroy the GameObject
             if (creatureToDelete != null && creatureToRemove != null) {
-                Debug.Log("Object: " + amountOfObjects);
-                Debug.Log("Creatures: " + creatures.Count);
                 bool removed = creatures.Remove(creatureToRemove);
                 if (removed) {
                     Destroy(creatureToDelete); // Destroy the GameObject
-                    AdjustCreatureIndices(); // Adjust the indices of remaining creatures
+                    CleanUpCreaturesList();
                 } else {
                     Debug.LogError("Creature was not found in the list.");
                 }
@@ -146,15 +126,13 @@ public class Player : MonoBehaviour {
             RemoveCreature();
         }
     }
-
-    void AdjustCreatureIndices() {
-    for (int i = 1; i < creatures.Count; i++) {
-        if (creatures[i] != null && creatures[i-1] == null) {
-            creatures[i-1] = creatures[i];
-            creatures.RemoveAt(i);
+    void CleanUpCreaturesList() {
+        for (int i = 0; i < creatures.Count; i++) {
+             if (creatures[i] == null) {
+                 creatures.RemoveAt(i);
+            }
         }
     }
-}
 
     public List<Creature> GetCreatures() { return creatures; }
 }

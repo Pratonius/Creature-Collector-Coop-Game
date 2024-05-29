@@ -29,8 +29,18 @@ public class PlayerUISidePanel : MonoBehaviour {
 
     void SetSidePanel() {
         List<Creature> playerCreatures = player.GetCreatures();
+        Debug.Log("Player Creatures: " + playerCreatures.Count);
+        foreach(Transform child in transform) {
+            Text textComponent = child.GetComponent<Text>();
+            if (textComponent != null) {
+                textComponent.text = "";
+            }
+        }
+
         for (int i = 0; i < playerCreatures.Count; i++) {
-            names[i].text = $"{i+1}: {playerCreatures[i].name}\nLVL: {playerCreatures[i].level}\nHP: {playerCreatures[i].currentHealth}/{playerCreatures[i].maxHealth}";
+            if (playerCreatures[i] != null) {
+                names[i].text = $"{i+1}: {playerCreatures[i].name}\nLVL: {playerCreatures[i].level}\nHP: {playerCreatures[i].currentHealth}/{playerCreatures[i].maxHealth}";
+            }
         }
     }
 
