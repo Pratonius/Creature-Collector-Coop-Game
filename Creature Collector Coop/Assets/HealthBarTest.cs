@@ -7,14 +7,16 @@ using UnityEngine.UI;
 public class HealthBarTest : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
     private Image image;
     private GameObject healthInfo;
+    public GameObject healthBar;
     public Creature creature;
 
     private int testMaxHealth = 319;
 
-    public bool playerSide;
+    public bool playerSide = true;
 
     void Start() {
-        image = gameObject.GetComponent<Image>();
+        Debug.Log(transform.childCount);
+        image = healthBar.GetComponent<Image>();
         image.fillAmount = 1;
         healthInfo = transform.Find("HealthInfo").gameObject;
         healthInfo.SetActive(false);
@@ -43,13 +45,18 @@ public class HealthBarTest : MonoBehaviour, IPointerEnterHandler, IPointerExitHa
     void SetupSlider() {
         //currently not working. jesper will fix at some point XD
         if (playerSide) {
+            Debug.Log(image.fillOrigin);
             image.fillOrigin = (int)Image.OriginHorizontal.Left;
+            Debug.Log(image.fillOrigin);
         } else {
+            Debug.Log(image.fillOrigin);
             image.fillOrigin = (int)Image.OriginHorizontal.Right;
+            Debug.Log(image.fillOrigin);
         }
     }
 
     public void OnPointerEnter(PointerEventData eventData) {
+        Debug.Log("TEST");
         healthInfo.SetActive(true);
         //Set to take health info and put in here.
         //healthInfo.GetComponent<TextMeshProUGUI>().text = $"{image.fillAmount} {creature.GetCurrentHealth}/{creature.GetMaxHealth}";
