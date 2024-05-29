@@ -1,15 +1,22 @@
 using UnityEngine;
 
 public class Creature : MonoBehaviour {
-    private int maxHealth;
-    private int currentHealth;
-    private bool sex;
+    public int level;
+    public bool sex;
+    public int maxHealth;
+    public int currentHealth;
+    public int attack;
+    public int defense;
     //private CreatureType type;
     //private Move move1;
 
-    public Creature(int maxHealth, bool sex) {
+    public Creature(string name, int level, int maxHealth, int attack, int defense, bool sex) {
+        gameObject.name = name;
+        this.level = level;
         this.maxHealth = maxHealth;
-        this.currentHealth = maxHealth;
+        currentHealth = maxHealth;
+        this.attack = attack;
+        this.defense = defense;
         this.sex = sex;
     }
 

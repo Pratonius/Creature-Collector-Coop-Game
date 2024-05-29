@@ -2,47 +2,45 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.SceneManagement;
 
-public class SceneTransition : MonoBehaviour, IPointerClickHandler {
+public class SceneTransition : MonoBehaviour {
     public string sceneName;
-    public GameObject playerPrefab;
-    
-    public void StartBattle() {
-        SceneManager.LoadScene("BattleScene");
-    }
+    public static GameObject playerPrefab;
+    public GameObject spawnPosition;
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode) {
-        if (scene.name == sceneName) {
-            // Instantiate a new player GameObject from the prefab
-            GameObject newPlayer = Instantiate(playerPrefab);
+        Debug.Log("Scene Loaded: " + scene.name);
+        Debug.Log("Instantiating player...");
+        GameObject newPlayer = Instantiate(playerPrefab);
+        Debug.Log("Player instantiated: " + newPlayer.name);
 
-            // Optionally, you can set its position, rotation, and scale as needed
-            // For example:
-            // newPlayer.transform.position = new Vector3(0, 0, 0); // Set position to (0, 0, 0)
-            // newPlayer.transform.rotation = Quaternion.identity; // Set rotation to identity
-            // newPlayer.transform.localScale = Vector3.one; // Set scale to (1, 1, 1)
+        // Optionally, set its position, rotation, and scale as needed
+        newPlayer.transform.position = playerPrefab.transform.position; // Example position
+        newPlayer.transform.rotation = playerPrefab.transform.rotation;  // Example rotation
 
-            // Disable the renderer of the new player GameObject if needed
-            Renderer renderer = newPlayer.GetComponent<Renderer>();
-            if (renderer != null) {
-                renderer.enabled = false;
-            }
-        }
+        // Optional: Disable the renderer if needed
+        DisablePlayerInCombat(newPlayer, scene);
     }
-    
+
     void Start() {
+        Debug.Log("Start method called.");
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
     void OnDestroy() {
+        Debug.Log("Destroy method called.");
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
     public void TransitionToScene() {
-        // Load the new scene
         SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
     }
 
-    public void OnPointerClick(PointerEventData eventData) {
-        TransitionToScene();
+    void DisablePlayerInCombat(GameObject newPlayer, Scene scene) {
+        if (scene.name == "BattleScene" || scene.name == "MainMenu") {
+            Renderer renderer = newPlayer.GetComponent<Renderer>();
+            if (renderer != null) {
+                renderer.enabled = false; // Disable the renderer if needed
+            }
+        }
     }
 }
