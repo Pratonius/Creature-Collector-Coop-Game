@@ -41,7 +41,7 @@ public class Player : MonoBehaviour {
         if (other.gameObject.CompareTag("Grass")) {
             Grass grass = other.gameObject.GetComponent<Grass>();
             if (grass != null) {
-                grass.OnTriggerWithPlayer();
+                grass.OnTriggerWithPlayer(this);
             }
         }
     }
@@ -72,24 +72,26 @@ public class Player : MonoBehaviour {
         } 
     }
 
-    void AddCreature(Creature creature) {
-        if (creatures.Count < 6) {
-            GameObject childObject = Instantiate(creaturePrefab);
-            childObject.transform.SetParent(transform);
+    public void AddCreature(Creature creatureToAdd) {
+        Debug.Log("TEST");
+        if (creatureToAdd != null) {
+            Debug.LogError("creatureToAdd is null.");
+            return;
         }
-    }
-
-    void AddCreature() {
         if (creatures.Count < 6) {
             GameObject childObject = Instantiate(creaturePrefab, transform);
-
             if (childObject != null) {
                 Creature creature = childObject.GetComponent<Creature>();
-                CleanUpCreaturesList();
-                creature.name += creatures.Count+1;
-                creatures.Add(childObject.GetComponent<Creature>());  // Add the creature to the list
+                if (creature != null) {
+                    creature.CatchCreature(creatureToAdd);
+                    CleanUpCreaturesList();
+                    creatures.Add(creature);  // Add the creature to the list
+                    Debug.Log("Creature added successfully.");
+                } else {
+                    Debug.LogError("The instantiated object does not have a Creature component.");
+                }
             } else {
-                Debug.LogError("The instantiated object does not have a Creature component.");
+                Debug.LogError("Failed to instantiate creaturePrefab.");
             }
         } else {
             Debug.Log("Maximum number of creatures reached.");
@@ -119,8 +121,7 @@ public class Player : MonoBehaviour {
 
     void TestCreatureHandler() {
         if (Input.GetKeyDown(KeyCode.E)) {
-            //AddCreature(new Creature("TEST", 30, 90, 30, 30, false));
-            AddCreature();
+            AddCreature(new Creature("TEST", 30, 90, 30, 30, false, false));
         }
         if (Input.GetKeyDown(KeyCode.R)) {
             RemoveCreature();
