@@ -1,29 +1,27 @@
-using System.Xml.Serialization;
 using TMPro.Examples;
 using UnityEngine;
 
 public class FollowCameraManager : MonoBehaviour {
-    private CameraController camera;
+    private new CameraController camera;
+
     // Start is called before the first frame update
     void Start() {
         camera = gameObject.GetComponent<CameraController>();
-        //FollowPlayer();
+        FollowPlayer();
     }
 
-    // Update is called once per frame
-    void Update() {
-        
-    }
+    void FollowPlayer() {
+        if (camera == null) {
+            Debug.LogError("CameraController component is missing!");
+            return;
+        }
 
-    public void FollowPlayer() {
-        if (camera != null) {
-            Player player = FindAnyObjectByType<Player>();
-            if (player != null) {
-                camera.CameraTarget = player.transform;
-            }
+        Player player = FindObjectOfType<Player>();
+        if (player != null) {
+            camera.CameraTarget = player.transform;
+            Debug.Log("Camera is now following the player.");
         } else {
-            camera = gameObject.GetComponent<CameraController>();
-            FollowPlayer();
+            Debug.LogWarning("Player not found in the scene.");
         }
     }
 }

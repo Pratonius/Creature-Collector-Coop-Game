@@ -1,9 +1,10 @@
 using UnityEngine;
 
 public class BattlePauseManager : MonoBehaviour {
-    public Canvas pauseMenu;
+    private Canvas pauseMenu;
 
     void Start() {
+        pauseMenu = GameObject.FindGameObjectWithTag("MenuUI").GetComponent<Canvas>();
         if (pauseMenu != null) {
             pauseMenu.enabled = false;
         }

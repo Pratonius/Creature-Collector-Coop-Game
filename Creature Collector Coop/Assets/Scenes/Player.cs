@@ -45,6 +45,15 @@ public class Player : MonoBehaviour {
         }
     }
 
+    void OnTriggerExit2D(Collider2D other) {
+        if (other.gameObject.CompareTag("Grass")) {
+            Grass grass = other.gameObject.GetComponent<Grass>();
+            if (grass != null) {
+                grass.CanEncounter(true);
+            }
+        }
+    }
+
     void OnEnable() {
         Renderer renderer = GetComponent<Renderer>();
         if (renderer != null) {
@@ -95,25 +104,40 @@ public class Player : MonoBehaviour {
     }
 
     void RemoveCreature() {
+        if (creatures[creatures.Count-1] == null) {
+            creatures.RemoveAt(creatures.Count-1);
+        }
         if (creatures.Count > 1) {
             Creature creatureToRemove = creatures[0];
             string creatureNameToDelete = creatureToRemove.name;
-            GameObject creatureToDelete = transform.Find(creatureNameToDelete).gameObject;
-            if (creatureToDelete != null && creatureToRemove != null) {
-                bool removed = creatures.Remove(creatureToRemove);
-                if (removed) {
-                    Destroy(creatureToDelete); // Destroy the GameObject
-                    CleanUpCreaturesList();
+            
+            // Find the creature GameObject under the current GameObject
+            Transform creatureTransform = transform.Find(creatureNameToDelete);
+            
+            if (creatureTransform != null) {
+                // Get the GameObject reference
+                GameObject creatureToDelete = creatureTransform.gameObject;
+                
+                if (creatureToDelete != null && creatureToRemove != null) {
+                    bool removed = creatures.Remove(creatureToRemove);
+                    if (removed) {
+                        Destroy(creatureToDelete); // Destroy the GameObject
+                        CleanUpCreaturesList();
+                    } else {
+                        Debug.LogError("Creature was not found in the list.");
+                    }
                 } else {
-                    Debug.LogError("Creature was not found in the list.");
+                    Debug.LogError("Creature GameObject reference is null.");
                 }
             } else {
-                Debug.LogError("Creature GameObject reference is null.");
+                Debug.LogError("Creature GameObject not found under this GameObject.");
             }
         } else {
             Debug.Log("Can't have 0 Creatures in party.");
         }
     }
+
+
 
     void TestCreatureHandler() {
         if (Input.GetKeyDown(KeyCode.E)) {
@@ -126,7 +150,7 @@ public class Player : MonoBehaviour {
     
     void CleanUpCreaturesList() {
         for (int i = 0; i < creatures.Count; i++) {
-             if (creatures[i] == null) {
+            if (creatures[i] == null) {
                  creatures.RemoveAt(i);
             }
         }
@@ -149,18 +173,30 @@ public class Player : MonoBehaviour {
             string json = PlayerPrefs.GetString("PlayerData");
             PlayerData playerData = JsonUtility.FromJson<PlayerData>(json);
 
-            creatures = playerData.creatures;
-            Debug.Log("Player data loaded.");
+            if (playerData.creatures.Count > 0 && playerData.creatures[0] != null) {
+                creatures = playerData.creatures;
+                Debug.Log(playerData.creatures[0].name);
+                Debug.Log("CREATURES: " + creatures.Count + "  ||   PLAYERDATA CREATURES: " + playerData.creatures.Count);
+                Debug.Log("Player data loaded.");
 
-            // Re-instantiate creatures
-            foreach (Creature creature in creatures) {
-                GameObject childObject = Instantiate(creaturePrefab, transform);
-                Creature newCreature = childObject.GetComponent<Creature>();
-                newCreature.CopyCreatureStats(creature); // Make sure Creature has a CopyFrom method to copy the data
+                // Re-instantiate creatures
+                foreach (Creature creature in creatures) {
+                    GameObject childObject = Instantiate(creaturePrefab, transform);
+                    Creature newCreature = childObject.GetComponent<Creature>();
+                    newCreature.CopyCreatureStats(creature); // Make sure Creature has a CopyFrom method to copy the data
+                }
+            } else {
+                ResetAllPlayerPrefs();
             }
         } else {
             Debug.Log("No player data found.");
         }
+    }
+
+    public void ResetAllPlayerPrefs() {
+        PlayerPrefs.DeleteAll();
+        PlayerPrefs.Save(); // Ensure the changes are saved immediately
+        Debug.Log("All PlayerPrefs have been reset.");
     }
 }
 

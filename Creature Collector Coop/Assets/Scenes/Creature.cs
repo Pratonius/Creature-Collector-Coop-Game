@@ -12,8 +12,14 @@ public class Creature : MonoBehaviour {
     public int speed;
     public bool isCaught;
     private SpriteRenderer spriteRenderer;
-    //private CreatureType type;
+    //private CreatureType type1;
+    //private CreatureType type2;
+    //private int evasion;
     //private Move move1;
+    //private Move move2;
+    //private Move move3;
+    //private Move move4;
+    //private Ability ability;
 
     public Creature(string name, int level, int maxHealth, int attack, int defense, int speed, bool sex, bool isCaught) {
         this.name = name;

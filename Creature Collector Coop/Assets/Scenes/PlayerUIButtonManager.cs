@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class PlayerUIManager : MonoBehaviour, IPointerClickHandler {
+public class PlayerUIButtonManager : MonoBehaviour, IPointerClickHandler {
     private Player player;
     private PlayerUISidePanel sidePanel;
 
