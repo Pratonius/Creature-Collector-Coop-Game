@@ -8,8 +8,8 @@ public class PlayerUIManager : MonoBehaviour, IPointerClickHandler {
 
     // Start is called before the first frame update
     void Start() {
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        sidePanel = GameObject.FindGameObjectWithTag("PlayerUISidePanel").GetComponent<PlayerUISidePanel>();
+        player = FindObjectOfType<Player>();
+        sidePanel = FindObjectOfType<PlayerUISidePanel>();
         sidePanel.gameObject.SetActive(!sidePanel.gameObject.activeSelf);
     }
 

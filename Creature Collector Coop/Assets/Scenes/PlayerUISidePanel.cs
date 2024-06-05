@@ -9,7 +9,7 @@ public class PlayerUISidePanel : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        player = FindObjectOfType<Player>();
         if (player != null) {
             PopulateNamesList();
             SetSidePanel();

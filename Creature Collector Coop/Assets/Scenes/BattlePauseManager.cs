@@ -1,15 +1,10 @@
 using UnityEngine;
 
-public class WorldManager : MonoBehaviour {
-    private Player player;
-    private Canvas pauseMenu;
+public class BattlePauseManager : MonoBehaviour {
+    public Canvas pauseMenu;
 
-
-    void Start(){
-        player = FindObjectOfType<Player>();
-        pauseMenu = GameObject.FindGameObjectWithTag("MenuUI").GetComponent<Canvas>();
-        if (player != null && pauseMenu != null) {
-            player.enabled = true;
+    void Start() {
+        if (pauseMenu != null) {
             pauseMenu.enabled = false;
         }
     }
@@ -28,7 +23,6 @@ public class WorldManager : MonoBehaviour {
         if (pauseMenu != null) {
             pauseMenu.enabled = !pauseMenu.enabled;
             enabled = !enabled;
-            player.enabled = !player.enabled;
         }
     }
 }

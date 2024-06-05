@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
-public class HealthBarTest : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
+public class HealthBar : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler {
     private Image image;
     private GameObject healthInfo;
     public GameObject healthBar;

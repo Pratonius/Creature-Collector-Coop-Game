@@ -895,7 +895,7 @@ GameObject:
   - component: {fileID: 1530117438}
   - component: {fileID: 1530117437}
   m_Layer: 0
-  m_Name: SceneTransitioner
+  m_Name: SceneChanger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -914,7 +914,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: 
-  playerPrefab: {fileID: 2350840028806540884, guid: 06bd284077ecc514d9264814e070a546, type: 3}
+  spawnPosition: {fileID: 0}
 --- !u!4 &1530117438
 Transform:
   m_ObjectHideFlags: 0
@@ -1279,7 +1279,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   sceneName: MainWorldScene
-  sceneTransition: {fileID: 1530117437}
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
