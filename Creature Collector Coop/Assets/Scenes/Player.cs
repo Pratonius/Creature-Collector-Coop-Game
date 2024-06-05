@@ -13,7 +13,6 @@ public class Player : MonoBehaviour {
     void Start() {
         playerUISidePanel = GameObject.FindGameObjectWithTag("PlayerUISidePanel").GetComponent<PlayerUISidePanel>();
         creaturePrefab = Resources.Load<GameObject>("CreaturePrefab");
-        
         if (creaturePrefab == null) {
             Debug.LogError("Failed to find CreaturePrefab in the scene.");
             return;
@@ -41,7 +40,7 @@ public class Player : MonoBehaviour {
         if (other.gameObject.CompareTag("Grass")) {
             Grass grass = other.gameObject.GetComponent<Grass>();
             if (grass != null) {
-                grass.OnTriggerWithPlayer();
+                grass.OnTriggerWithPlayer(this);
             }
         }
     }
@@ -56,10 +55,8 @@ public class Player : MonoBehaviour {
     public void InitializeCreatures() {
         foreach (Transform child in transform) {
             Creature creature = child.GetComponent<Creature>();
-            if (creature != null) {
-                if (!creatures.Contains(creature)) { 
-                    creatures.Add(creature);
-                }
+            if (creature != null && !creatures.Contains(creature)) {
+                creatures.Add(creature);
             }
         }
     }
@@ -72,24 +69,25 @@ public class Player : MonoBehaviour {
         } 
     }
 
-    void AddCreature(Creature creature) {
-        if (creatures.Count < 6) {
-            GameObject childObject = Instantiate(creaturePrefab);
-            childObject.transform.SetParent(transform);
+    public void AddCreature(Creature creatureToAdd) {
+        if (creatureToAdd != null) {
+            Debug.LogError("creatureToAdd is null.");
+            return;
         }
-    }
-
-    void AddCreature() {
         if (creatures.Count < 6) {
             GameObject childObject = Instantiate(creaturePrefab, transform);
-
             if (childObject != null) {
                 Creature creature = childObject.GetComponent<Creature>();
-                CleanUpCreaturesList();
-                creature.name += creatures.Count+1;
-                creatures.Add(childObject.GetComponent<Creature>());  // Add the creature to the list
+                if (creature != null) {
+                    creature.CatchCreature(creatureToAdd);
+                    CleanUpCreaturesList();
+                    creatures.Add(creature);  // Add the creature to the list
+                    Debug.Log("Creature added successfully.");
+                } else {
+                    Debug.LogError("The instantiated object does not have a Creature component.");
+                }
             } else {
-                Debug.LogError("The instantiated object does not have a Creature component.");
+                Debug.LogError("Failed to instantiate creaturePrefab.");
             }
         } else {
             Debug.Log("Maximum number of creatures reached.");
@@ -119,13 +117,13 @@ public class Player : MonoBehaviour {
 
     void TestCreatureHandler() {
         if (Input.GetKeyDown(KeyCode.E)) {
-            //AddCreature(new Creature("TEST", 30, 90, 30, 30, false));
-            AddCreature();
+            AddCreature(new Creature("TEST", 30, 90, 30, 30, 30, false, false));
         }
         if (Input.GetKeyDown(KeyCode.R)) {
             RemoveCreature();
         }
     }
+    
     void CleanUpCreaturesList() {
         for (int i = 0; i < creatures.Count; i++) {
              if (creatures[i] == null) {
@@ -135,4 +133,38 @@ public class Player : MonoBehaviour {
     }
 
     public List<Creature> GetCreatures() { return creatures; }
+
+    public void SavePlayerData() {
+        PlayerData playerData = new PlayerData();
+        playerData.creatures = creatures;
+
+        string json = JsonUtility.ToJson(playerData);
+        PlayerPrefs.SetString("PlayerData", json);
+        PlayerPrefs.Save();
+        Debug.Log("Player data saved.");
+    }
+
+    public void LoadPlayerData() {
+        if (PlayerPrefs.HasKey("PlayerData")) {
+            string json = PlayerPrefs.GetString("PlayerData");
+            PlayerData playerData = JsonUtility.FromJson<PlayerData>(json);
+
+            creatures = playerData.creatures;
+            Debug.Log("Player data loaded.");
+
+            // Re-instantiate creatures
+            foreach (Creature creature in creatures) {
+                GameObject childObject = Instantiate(creaturePrefab, transform);
+                Creature newCreature = childObject.GetComponent<Creature>();
+                newCreature.CopyCreatureStats(creature); // Make sure Creature has a CopyFrom method to copy the data
+            }
+        } else {
+            Debug.Log("No player data found.");
+        }
+    }
+}
+
+[System.Serializable]
+public class PlayerData {
+    public List<Creature> creatures;
 }

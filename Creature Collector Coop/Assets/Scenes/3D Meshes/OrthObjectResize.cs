@@ -22,7 +22,5 @@ public class OrthObjectResize : MonoBehaviour
         height = Camera.main.orthographicSize * 2;
         float aspectRatio = height * Screen.width / Screen.height;
         gameObject.transform.localScale = Vector3.one + objectSize * aspectRatio /19f;
-        //Debug.Log(Screen.width + " : " + Screen.height);
-        Debug.Log(aspectRatio);
     }
 }

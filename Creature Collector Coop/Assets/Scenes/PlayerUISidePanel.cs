@@ -9,9 +9,11 @@ public class PlayerUISidePanel : MonoBehaviour {
 
     // Start is called before the first frame update
     void Start() {
-        player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
-        PopulateNamesList();
-        SetSidePanel();
+        player = FindObjectOfType<Player>();
+        if (player != null) {
+            PopulateNamesList();
+            SetSidePanel();
+        }
     }
 
     void Update() {
@@ -29,7 +31,6 @@ public class PlayerUISidePanel : MonoBehaviour {
 
     void SetSidePanel() {
         List<Creature> playerCreatures = player.GetCreatures();
-        Debug.Log("Player Creatures: " + playerCreatures.Count);
         foreach(Transform child in transform) {
             Text textComponent = child.GetComponent<Text>();
             if (textComponent != null) {
