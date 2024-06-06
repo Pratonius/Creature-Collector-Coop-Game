@@ -8,6 +8,7 @@ TagManager:
   - PlayerUI
   - PlayerUISidePanel
   - MenuUI
+  - MainLight
   layers:
   - Default
   - TransparentFX
